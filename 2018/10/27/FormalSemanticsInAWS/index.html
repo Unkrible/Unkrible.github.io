@@ -108,18 +108,18 @@
 
 
 
-  <meta name="description" content="形式语义在Amazon Web Services(AWS)中的应用译自 Use of Formal Methods at Amazon Web Services 序自2011年起，AWS的工程师就已经使用形式化描述与模型检验来帮助解决设计关键系统的难题。这篇文章描述了：  应用过程中是什么提供了动力 获得了哪些经验 在他们的问题范围内哪些发挥良好作用哪些没有  AWS致力于为客户打造简单易用的服务">
+  <meta name="description" content="译自 Use of Formal Methods at Amazon Web Services 序自2011年起，AWS的工程师就已经使用形式化描述与模型检验来帮助解决设计关键系统的难题。这篇文章描述了：  应用过程中是什么提供了动力 获得了哪些经验 在他们的问题范围内哪些发挥良好作用哪些没有  AWS致力于为客户打造简单易用的服务，这种外部的简单是建立在底层复杂的分布式系统之上的，因此基础服务必">
 <meta name="keywords" content="Geek, Formal Semantics">
 <meta property="og:type" content="article">
 <meta property="og:title" content="形式语义在Amazon Web Services(AWS)中的应用">
 <meta property="og:url" content="http://yoursite.com/2018/10/27/FormalSemanticsInAWS/index.html">
 <meta property="og:site_name" content="Rex&#39;s blog">
-<meta property="og:description" content="形式语义在Amazon Web Services(AWS)中的应用译自 Use of Formal Methods at Amazon Web Services 序自2011年起，AWS的工程师就已经使用形式化描述与模型检验来帮助解决设计关键系统的难题。这篇文章描述了：  应用过程中是什么提供了动力 获得了哪些经验 在他们的问题范围内哪些发挥良好作用哪些没有  AWS致力于为客户打造简单易用的服务">
+<meta property="og:description" content="译自 Use of Formal Methods at Amazon Web Services 序自2011年起，AWS的工程师就已经使用形式化描述与模型检验来帮助解决设计关键系统的难题。这篇文章描述了：  应用过程中是什么提供了动力 获得了哪些经验 在他们的问题范围内哪些发挥良好作用哪些没有  AWS致力于为客户打造简单易用的服务，这种外部的简单是建立在底层复杂的分布式系统之上的，因此基础服务必">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-10-26T16:33:14.746Z">
+<meta property="og:updated_time" content="2018-10-26T16:37:11.960Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="形式语义在Amazon Web Services(AWS)中的应用">
-<meta name="twitter:description" content="形式语义在Amazon Web Services(AWS)中的应用译自 Use of Formal Methods at Amazon Web Services 序自2011年起，AWS的工程师就已经使用形式化描述与模型检验来帮助解决设计关键系统的难题。这篇文章描述了：  应用过程中是什么提供了动力 获得了哪些经验 在他们的问题范围内哪些发挥良好作用哪些没有  AWS致力于为客户打造简单易用的服务">
+<meta name="twitter:description" content="译自 Use of Formal Methods at Amazon Web Services 序自2011年起，AWS的工程师就已经使用形式化描述与模型检验来帮助解决设计关键系统的难题。这篇文章描述了：  应用过程中是什么提供了动力 获得了哪些经验 在他们的问题范围内哪些发挥良好作用哪些没有  AWS致力于为客户打造简单易用的服务，这种外部的简单是建立在底层复杂的分布式系统之上的，因此基础服务必">
 
 
 
@@ -363,7 +363,7 @@
                 
               
 
-              <time title="创建时间：2018-10-27 00:25:39 / 修改时间：00:33:14" itemprop="dateCreated datePublished" datetime="2018-10-27T00:25:39+08:00">2018-10-27</time>
+              <time title="创建时间：2018-10-27 00:25:39 / 修改时间：00:37:11" itemprop="dateCreated datePublished" datetime="2018-10-27T00:25:39+08:00">2018-10-27</time>
             
 
             
@@ -426,27 +426,30 @@
       
 
       
-        <h1 id="形式语义在Amazon-Web-Services-AWS-中的应用"><a href="#形式语义在Amazon-Web-Services-AWS-中的应用" class="headerlink" title="形式语义在Amazon Web Services(AWS)中的应用"></a>形式语义在Amazon Web Services(AWS)中的应用</h1><p>译自 <a href="http://lamport.azurewebsites.net/tla/amazon.html" target="_blank" rel="noopener">Use of Formal Methods at Amazon Web Services</a></p>
+        <p>译自 <a href="http://lamport.azurewebsites.net/tla/amazon.html" target="_blank" rel="noopener">Use of Formal Methods at Amazon Web Services</a></p>
 <h3 id="序"><a href="#序" class="headerlink" title="序"></a>序</h3><p>自2011年起，AWS的工程师就已经使用形式化描述与模型检验来帮助解决设计关键系统的难题。这篇文章描述了：</p>
 <ul>
 <li>应用过程中是什么提供了动力</li>
 <li>获得了哪些经验</li>
 <li>在他们的问题范围内哪些发挥良好作用哪些没有</li>
 </ul>
-<p>AWS致力于为客户打造简单易用的服务，这种外部的简单是建立在底层复杂的分布式系统之上的，因此基础服务必须满足一下性质：</p>
+<p>AWS致力于为客户打造简单易用的服务，这种外部的简单是建立在底层复杂的分布式系统之上的，因此基础服务必须满足以下性质：</p>
 <ul>
 <li>高可用性</li>
 <li>有成本效率的</li>
 <li>可应对不断快速增长的商业需求</li>
 </ul>
 <p>以S3为例，它提供了可靠的存储和分理数据的功能。为了安全保证，每个服务的核心都依赖于诸如多副本、一致性、并发控制、自动扩充、负载均衡等错误容忍的分布式算法。对于这些算法，将它们组合为一个系统是十分困难的，它们需要被改动，甚至需要设计自己的算法。这导致了高度的复杂性，并且随之而来的，是在设计、代码、操作中的人为错误，会导致灾难性的后果。</p>
-<p>因此，在启动一种服务之前，它必须是高可信的。但是在工业中标准的验证技术虽然必须但不够有效，即使使用了诸如deep design review、code review、static code analysis、stress testing、fault-injection test等技术，还是有许多bug隐藏在这个复杂的可容错的病发系统中。这其中一个原因就是：人力有尽时，我们无法估计出这样一个每秒百万级请求的服务可能产生怎样罕见的事件。</p>
-<p><center>“To a first approximation, we can say that accidents are almost always the result of incorrect estimates of the likelihood of one more things.”- c.mICHAEL hOLLOWAY, NASA</center><br>人类的不可靠性意味着：</p>
+<p>因此，在启动一种服务之前，它必须是高可信的。但是在工业中标准的验证技术虽然必须但不够有效，即使使用了诸如deep design review、code review、static code analysis、stress testing、fault-injection test等技术，还是有许多bug隐藏在这个复杂的可容错的并发系统中。这其中一个原因就是：人力有尽时，我们无法估计出这样一个每秒百万级请求的服务可能产生怎样罕见的事件。</p>
+<p><center>“To a first approximation, we can say that accidents are almost always the result of incorrect estimates of the likelihood of one more things.”- c.Michael Holloway, NASA</center><br>人类的不可靠性意味着：</p>
 <ul>
-<li>在设计中细微的危险的bug导致了大的错误</li>
-<li>代码实现了预想的设计，但设计并没有cover住所有的情况</li>
+<li>在设计中细微的危险的bug导致了重大的错误</li>
+<li>虽然代码实现了预想的设计，但是设计并没有cover住所有的情况</li>
 </ul>
-<p>在这面前，测试是不可靠的，需要一种更好地方式来满足我们的需求。</p>
+<p>在这面前，测试是不可靠的，我们需要一种更好地方式来满足需求。</p>
+<blockquote>
+<p>To be continue.</p>
+</blockquote>
 <blockquote>
 <p>To be continue.</p>
 </blockquote>
@@ -652,7 +655,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#形式语义在Amazon-Web-Services-AWS-中的应用"><span class="nav-number">1.</span> <span class="nav-text">形式语义在Amazon Web Services(AWS)中的应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#序"><span class="nav-number">1.0.1.</span> <span class="nav-text">序</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#序"><span class="nav-number">1.</span> <span class="nav-text">序</span></a></li></ol></div>
             
 
           </div>
