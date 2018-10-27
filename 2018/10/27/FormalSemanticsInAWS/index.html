@@ -116,10 +116,12 @@
 <meta property="og:site_name" content="Rex&#39;s blog">
 <meta property="og:description" content="译自 Use of Formal Methods at Amazon Web Services 序自2011年起，AWS的工程师就已经使用形式化描述与模型检验来帮助解决设计关键系统的难题。这篇文章描述了：  应用过程中是什么提供了动力 获得了哪些经验 在他们的问题范围内哪些发挥良好作用哪些没有  AWS致力于为客户打造简单易用的服务，这种外部的简单是建立在底层复杂的分布式系统之上的，因此基础服务必">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-10-26T16:45:39.555Z">
+<meta property="og:image" content="http://yoursite.com/assets/blogs/TLA+InAWS.png">
+<meta property="og:updated_time" content="2018-10-27T15:30:15.795Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="形式化方法在Amazon Web Services(AWS)中的应用">
 <meta name="twitter:description" content="译自 Use of Formal Methods at Amazon Web Services 序自2011年起，AWS的工程师就已经使用形式化描述与模型检验来帮助解决设计关键系统的难题。这篇文章描述了：  应用过程中是什么提供了动力 获得了哪些经验 在他们的问题范围内哪些发挥良好作用哪些没有  AWS致力于为客户打造简单易用的服务，这种外部的简单是建立在底层复杂的分布式系统之上的，因此基础服务必">
+<meta name="twitter:image" content="http://yoursite.com/assets/blogs/TLA+InAWS.png">
 
 
 
@@ -363,7 +365,7 @@
                 
               
 
-              <time title="创建时间：2018-10-27 00:25:39 / 修改时间：00:45:39" itemprop="dateCreated datePublished" datetime="2018-10-27T00:25:39+08:00">2018-10-27</time>
+              <time title="创建时间：2018-10-27 00:25:39 / 修改时间：23:30:15" itemprop="dateCreated datePublished" datetime="2018-10-27T00:25:39+08:00">2018-10-27</time>
             
 
             
@@ -440,14 +442,68 @@
 <li>可应对不断快速增长的商业需求</li>
 </ul>
 <p>以S3为例，它提供了可靠的存储和分理数据的功能。为了安全保证，每个服务的核心都依赖于诸如多副本、一致性、并发控制、自动扩充、负载均衡等错误容忍的分布式算法。对于这些算法，将它们组合为一个系统是十分困难的，它们需要被改动，甚至需要设计自己的算法。这导致了高度的复杂性，并且随之而来的，是在设计、代码、操作中的人为错误，会导致灾难性的后果。</p>
-<p>因此，在启动一种服务之前，它必须是高可信的。但是在工业中标准的验证技术虽然必须但不够有效，即使使用了诸如deep design review、code review、static code analysis、stress testing、fault-injection test等技术，还是有许多bug隐藏在这个复杂的可容错的并发系统中。这其中一个原因就是：人力有尽时，我们无法估计出这样一个每秒百万级请求的服务可能产生怎样罕见的事件。</p>
-<p><center>“To a first approximation, we can say that accidents are almost always the result of incorrect estimates of the likelihood of one more things.”- C.Michael Holloway, NASA</center><br>人类的不可靠性意味着：</p>
+<p>因此，在启动一种服务之前，它必须是高可信的。但是在工业中标准的验证技术虽然必须但不够有效，即使使用了诸如deep design review、code review、static code analysis、stress testing、fault-injection test等技术，还是有许多bug隐藏在这个复杂的可容错的并发系统中。这其中一个原因就是：人力有尽时，我们无法估计出这样一个每秒百万级请求的服务可能产生怎样罕见的事件。<br><br><br>“To a first approximation, we can say that accidents are almost always the result of incorrect estimates of the likelihood of one more things.”- C.Michael Holloway, NASA<br><br><br>人类的不可靠性意味着：</p>
 <ul>
 <li>在设计中细微的危险的bug导致了重大的错误</li>
 <li>虽然代码实现了预想的设计，但是设计并没有cover住所有的情况</li>
 </ul>
 <p>在这面前，测试是不可靠的，我们需要一种更好地方式来满足需求。</p>
-<h3 id="精确的设计"><a href="#精确的设计" class="headerlink" title="精确的设计"></a>精确的设计</h3><blockquote>
+<h3 id="精确的设计"><a href="#精确的设计" class="headerlink" title="精确的设计"></a>精确的设计</h3><p>为了找到系统设计中难以察觉的bug，对于系统必须有准确的描述，这有至少两大好处：</p>
+<ul>
+<li>强迫设计者思考的更清楚，消除了一些摇摆不定的东西</li>
+<li>可以有工具用于设计中的错误检查（甚至在设计过程中）</li>
+</ul>
+<p>相比之下，由片段、静态图表甚至伪代码组成的传统设计文档是一种临时的不可测试的语言，离<strong>精确</strong>差距甚远，他们通常是模糊的、忽略了如部分失败或并发粒度的关键方面。并且虽然在这过程的末端，最后的可执行的代码是明确的，但是充满了大量的细节。因此，我们需要用几百行精确的描述能够抓住这个系统设计的本质。由于我们的设计不可避免是复杂的，我们需要一种语言：</p>
+<ul>
+<li>具有强表达力，可以描述并发且具有容错能力</li>
+<li>抽象远在代码层之上</li>
+<li>具有精确的语义</li>
+<li>易学易用，避免了过于复杂的概念</li>
+<li>具有良好的生态系统，有现存的工具使用</li>
+</ul>
+<p><strong>总之</strong>，需要一个即买即用的具有高回报率的方法——<strong>TLA+(a formal specification language)</strong></p>
+<p>一个TLA+规范描述了系统所有合法行为(execution traces)的集合，它同时可用于：</p>
+<ul>
+<li>描述系统的正确的性质</li>
+<li>描述系统的设计</li>
+</ul>
+<p>TLA+中，正确性与系统原型设计只是抽象过程中的一些步骤：</p>
+<ul>
+<li>Lower: executable code and hardware</li>
+<li>Middle: systems designs and algorithms</li>
+<li>Higher: correctness properties</li>
+</ul>
+<p>TLA+目的是通过传统数学或更简单的TLC model checker工具尽量简单的证明系统原型设计正确地满足了需要的正确的性质，并且检查在所有运行过程中这些性质的正确性。</p>
+<p>将抽象的过程进行分层的好处是：</p>
+<ol>
+<li>管理实际系统的复杂性</li>
+<li>对中间层再分层，针对不同的方面进行交付</li>
+<li>每层正确性仅依赖于高层，极为灵活</li>
+</ol>
+<p>同时，TLA+有一个类似C风格的语言PlusCal（目的是替换伪代码），虽然PlusCal需要熟悉TLA+以写出更加具有表达力的代码。</p>
+<h3 id="在工业级系统中形式化方法的价值"><a href="#在工业级系统中形式化方法的价值" class="headerlink" title="在工业级系统中形式化方法的价值"></a>在工业级系统中形式化方法的价值</h3><p>在工业中，形式化方法一向有着需要大量训练与精力来验证一些相对直接代码的名声，因此回报率低，仅被使用在安全极其重要的领域。但是，在AWS中TLA+的使用证明了这种想法是极其错误的。到目前为止，他们在10个大型复杂系统中使用了TLA+。在每个系统中，TLA+发挥了重要的作用：</p>
+<ul>
+<li>找到了其他方式无法检测的bug</li>
+<li>在算法不牺牲正确性的情况下进行一些激进的优化</li>
+</ul>
+<p>现在AWS由7个团队在使用TLA+，并且它极易上手，部分应用如下：<br><img src="/assets/blogs/TLA+InAWS.png" alt="TLA+InAWS"></p>
+<h3 id="好处：更好地设计系统原型的方式"><a href="#好处：更好地设计系统原型的方式" class="headerlink" title="好处：更好地设计系统原型的方式"></a>好处：更好地设计系统原型的方式</h3><p>TLA+帮助我们转变方式更好地设计系统原型。</p>
+<p>工程师会自然地先关注设计系统的<code>happy case</code>（比如没有错误发生程序的特殊情况），这是很自然的想法，因为<code>happy case</code>是最常见的情况。这样代码必须解决客户需求、运行良好、充分利用资源且达到商业需求；并且这些都是重要的挑战。一旦<code>happy case</code>结束，工程师需要在个人、同事、评论者经验的基础上考虑，<strong>什么可能出错</strong>，根据直觉或统计信息来缓解，当然无法穷尽所有可能的罕见的事件组合。</p>
+<p>相比之下，使用形式化规范我们开始精确的规定<strong>什么需要正常运转</strong>。</p>
+<h4 id="通过定义适当属性规范系统该做什么"><a href="#通过定义适当属性规范系统该做什么" class="headerlink" title="通过定义适当属性规范系统该做什么"></a>通过定义适当属性规范系统该做什么</h4><p>这通常有两个变体</p>
+<ul>
+<li>Safety properties: 系统被允许做什么</li>
+<li>Liveness properties: 系统最终必须做什么</li>
+</ul>
+<h4 id="精确描述设计原型和系统操作环境（抽象版）"><a href="#精确描述设计原型和系统操作环境（抽象版）" class="headerlink" title="精确描述设计原型和系统操作环境（抽象版）"></a>精确描述设计原型和系统操作环境（抽象版）</h4><p>通过详述所有系统依赖的环境属性来显式地表达<strong>什么必须正确的做</strong>，比如“信道如果失败了，信息必须广播”等。下一步，为了确认设计原型正确处理所有环境中的动态事件，详列所有可能事件的影响。然后使用model checker来验证在这操作环境的任意事件组合下，系统规格实现了正确的属性。</p>
+<p>我们发现这个严谨的<strong>what needs to go right</strong>方法相比<strong>what might go wrong</strong>极大的减少了错误。</p>
+<h3 id="好处：提高了理解性、生产效率和创新"><a href="#好处：提高了理解性、生产效率和创新" class="headerlink" title="好处：提高了理解性、生产效率和创新"></a>好处：提高了理解性、生产效率和创新</h3><p>在系统的生命周期中，撰写形式化规格有许多好处。所有Amazon的产品服务甚至是若干年前发布的都在不断地发展中：</p>
+<ul>
+<li>增加客户需要的新功能</li>
+<li>应对规模增长重新设计组件</li>
+<li>解决瓶颈来提高性能<br>挑战是巨大的并且必须在系统不停工的条件下进行。我们最高的优先级是避免生产系统中的bug，所以经常问一个问题<strong>is this change safe?</strong></li>
+</ul>
+<blockquote>
 <p>To be continue.</p>
 </blockquote>
 
@@ -656,7 +712,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#序"><span class="nav-number">1.</span> <span class="nav-text">序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#精确的设计"><span class="nav-number">2.</span> <span class="nav-text">精确的设计</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#序"><span class="nav-number">1.</span> <span class="nav-text">序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#精确的设计"><span class="nav-number">2.</span> <span class="nav-text">精确的设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在工业级系统中形式化方法的价值"><span class="nav-number">3.</span> <span class="nav-text">在工业级系统中形式化方法的价值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#好处：更好地设计系统原型的方式"><span class="nav-number">4.</span> <span class="nav-text">好处：更好地设计系统原型的方式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#通过定义适当属性规范系统该做什么"><span class="nav-number">4.1.</span> <span class="nav-text">通过定义适当属性规范系统该做什么</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#精确描述设计原型和系统操作环境（抽象版）"><span class="nav-number">4.2.</span> <span class="nav-text">精确描述设计原型和系统操作环境（抽象版）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#好处：提高了理解性、生产效率和创新"><span class="nav-number">5.</span> <span class="nav-text">好处：提高了理解性、生产效率和创新</span></a></li></ol></div>
             
 
           </div>
